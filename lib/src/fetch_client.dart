@@ -142,6 +142,16 @@ class FetchClient extends BaseClient {
     final stream = onDone(reader.readAsStream(), abort);
     final contentLength = response.headers.get('Content-Length');
 
+    var responseHeaders = <String, String>{};
+    try {
+      responseHeaders = {
+        for (final header in response.headers.entries())
+          header.first: header.last,
+      };
+    } catch (e) {
+      print(e);
+    }
+
     return FetchResponse(
       stream,
       response.status,
@@ -149,10 +159,7 @@ class FetchClient extends BaseClient {
       url: response.url,
       redirected: response.redirected,
       request: request,
-      headers: {
-        for (final header in response.headers.entries())
-          header.first: header.last,
-      },
+      headers: responseHeaders,
       isRedirect: false,
       persistentConnection: false,
       reasonPhrase: response.statusText,
